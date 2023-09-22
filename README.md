@@ -460,6 +460,7 @@ plot(margin(best_rf, test$diagnosis))
 varImpPlot(best_rf)
 
 # Function to generate and visualize a fourfold plot
+
 generate_fourfold_plot <- function(cm, method_name) {
   col <- c("#ed3b3b", "#0099ff")
   fourfoldplot(cm$table, color = col, conf.level = 0, margin = 1, main = paste(method_name, "(", round(cm$overall[1] * 100), "%)", sep = ""))
@@ -474,16 +475,16 @@ select_best_prediction_model <- function(confusion_matrices) {
 
 # Generate and visualize fourfold plots
 par(mfrow = c(3, 5))
-generate_fourfold_plot(cm_nb, "NB")
+generate_fourfold_plot(cm_imp_nb, "NB")
 generate_fourfold_plot(cm_knn, "KNN")
 generate_fourfold_plot(cm_imp_svm, "SVM")
-generate_fourfold_plot(cm_rf, "RF")
+generate_fourfold_plot(cm_rf_cv, "RF")
 
 # Create a list of confusion matrices for different methods
-confusion_matrices <- list(cm_nb, cm_knn, cm_imp_svm, cm_rf)
+confusion_matrices <- list(cm_imp_nb, cm_knn, cm_imp_svm, cm_rf)
 
 #Select a best prediction model according to high accuracy
-opt_predict <- c(cm_nb$overall[1],cm_rf$overall[1], cm_knn$overall[1], cm_rf$overall[1], cm_imp_svm$overall[1])
+opt_predict <- c(cm_imp_nb$overall[1],cm_rf$overall[1], cm_knn$overall[1], cm_rf_cv$overall[1], cm_imp_svm$overall[1])
 names(opt_predict) <- c("nb","knn","rf","imp_svm")
 best_predict_model <- subset(opt_predict, opt_predict==max(opt_predict))
 best_predict_model
@@ -541,9 +542,7 @@ library(knitr)
 kable(head(results_df, 20))
 
 
-
-###For the Web Page
-
+##For Web Page
 # Load necessary libraries and define your prediction function and model here
 library(shiny)
 library(knitr)
